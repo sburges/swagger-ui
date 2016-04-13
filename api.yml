@@ -1,0 +1,574 @@
+swagger: '2.0'
+info:
+  title: Helion Service Catalog
+  version: "1.0.0"
+  description: Helion Service Catalog API
+consumes:
+- application/json
+- text/plain
+produces:
+- application/json
+- text/plain
+schemes:
+- http
+
+basePath: /v1
+
+paths:
+  /catalogs:
+    get:
+      tags: ["catalog"]
+      operationId: listCatalogs
+      description: |
+        Gets list of available `catalog` objects, which can represent a github repository or cf cluster or other support object stores.
+      parameters:
+        - name: catalog_type
+          in: query
+          description: type of catalog
+          type: string
+      responses:
+        200:
+          description: "list of catalogs"
+          schema:
+            title: ArrayOfCatalogItems
+            type: array
+            items:
+               $ref: "#/definitions/CatalogRepository_Response"
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /catalogs/{catalog_id}:
+    get:
+      tags: ["catalog"]
+      operationId: getCatalogDetails
+      description: Gets the detail of the specified `catalog` object.
+      parameters:
+        - name: catalog_id
+          in: path
+          description: Catalog id
+          required: true
+          type: string
+      responses:
+        200:
+          description: "details of Catalog"
+          schema:
+            $ref: "#/definitions/CatalogRepository_Response"
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /catalogs/{catalog_id}/services:
+    get:
+      tags: ["catalog"]
+      operationId: getServicesForCatalog
+      description: Gets list of services of a particular catalog.
+      parameters:
+        - name: catalog_id
+          in: path
+          description: Catalog id
+          required: true
+          type: string
+      responses:
+        200:
+          description: "OK"
+          schema:
+            title: ArrayOfServices
+            type: array
+            items:
+              $ref: "#/definitions/ServiceItem_Response"
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /services:
+    get:
+      tags: ["service"]
+      operationId: listServices
+      description: |
+        Gets list of available `service` objects, which represent service deploying definition and configuration of individual service.
+      parameters:
+        - name: category
+          in: query
+          description: service Category
+          type: string
+        - name: tags
+          in: query
+          description: search Tags
+          type: string
+        - name: catalog
+          in: query
+          description: catalog name
+          type: string
+      responses:
+        200:
+          description: "OK"
+          schema:
+            title: ArrayOfServiceItems
+            type: array
+            items:
+              $ref: "#/definitions/ServiceItem_Response"
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /services/{service_id}:
+    get:
+      tags: ["service"]
+      operationId: getService
+      description: Gets the details of corresponding the service object
+      parameters:
+        - name: service_id
+          in: path
+          description: service_id
+          required: true
+          type: string
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ServiceItem_Response"
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /services/{service_id}/readme:
+    get:
+      tags: ["service"]
+      operationId: getServiceReadme
+      description: Gets the contents of readme for the service object
+      parameters:
+        - name: service_id
+          in: path
+          description: service_id
+          required: true
+          type: string
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: file
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /services/{service_id}/icon:
+    get:
+      tags: ["service"]
+      operationId: getServiceIcon
+      description: Gets the contents of icon for the service object
+      parameters:
+        - name: service_id
+          in: path
+          description: service_id
+          required: true
+          type: string
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: file
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /services/{service_id}/versions:
+    get:
+      tags: ["service"]
+      operationId: getServiceVersionsList
+      description: Gets the list of versions for a particular service.
+      parameters:
+        - name: service_id
+          in: path
+          description: service_id
+          required: true
+          type: string
+      responses:
+        200:
+          description: "OK"
+          schema:
+            title: ArrayOfVersions
+            type: array
+            items:
+              $ref: "#/definitions/ServiceVersion_Response"
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /services/{service_id}/versions/{version_id}:
+    get:
+      tags: ["service"]
+      operationId: getServiceVersion
+      description: Gets details of a specific version of a service.
+      parameters:
+        - name: service_id
+          in: path
+          description: service_id
+          required: true
+          type: string
+        - name: version_id
+          in: path
+          description: version_id
+          required: true
+          type: string
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ServiceVersion_Response"
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /services/{service_id}/versions/{version_id}/templates/{template_id}:
+    get:
+      tags: ["service"]
+      operationId: getServiceVersionTemplate
+      description: Gets details of a specific version of a service.
+      parameters:
+        - name: service_id
+          in: path
+          description: service_id
+          required: true
+          type: string
+        - name: version_id
+          in: path
+          description: version_id
+          required: true
+          type: string
+        - name: template_id
+          in: path
+          description: template_id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: file
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /instances:
+    get:
+      tags: ["instance"]
+      operationId: listInstances
+      description: |
+       Gets list of available `instance` objects, which represent
+       the instances of the services running on UCP.
+      parameters:
+        - name: category
+          in: query
+          description: service Category
+          type: string
+        - name: tags
+          in: query
+          description: search Tags
+          type: string
+        - name: catalog
+          in: query
+          description: catalog name
+          type: string
+        - name: service
+          in: query
+          description: service name
+          type: string
+      responses:
+        200:
+          description: "OK"
+          schema:
+            title: ArrayOfServiceItems
+            type: array
+            items:
+              $ref: "#/definitions/Service_Instance_Response"
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/Error"
+
+    post:
+      tags: ["instance"]
+      operationId: createInstance
+      description: |
+       Deploy the service to UCP.
+      parameters:
+        - name: service_deployment_definition
+          in: body
+          description: The service JSON you want to post
+          schema:
+            $ref: '#/definitions/Service_Instance_Request'
+          required: true
+      responses:
+        201:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/Service_Instance_Response"
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /instances/{instance_id}:
+    get:
+      tags: ["instance"]
+      operationId: getInstance
+      description: |
+       Gets details of a particular instance.
+      parameters:
+        - name: instance_id
+          in: path
+          description: instance id
+          required: true
+          type: string
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/Service_Instance_Response"
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/Error"
+
+    delete:
+      tags: ["instance"]
+      operationId: deleteInstance
+      description: |
+       Deletes a particular instance.
+      parameters:
+        - name: instance_id
+          in: path
+          description: instance id
+          required: true
+          type: string
+      responses:
+        202:
+          description: "ACCEPTED"
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /categories:
+    get:
+      tags: ["categories"]
+      operationId: listCategories
+      description: |
+        Gets list of all `categories` published services are classified into.
+      parameters:
+        - name: catalog
+          in: query
+          description: catalog for which querying
+          type: string
+      responses:
+        200:
+          description: "list of categories"
+          schema:
+            title: ArrayOfCattegroyItems
+            type: array
+            items:
+               $ref: "#/definitions/Category_Response"
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/Error"
+
+definitions:
+  ServiceItem_Response:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Service ID
+      name:
+        type: string
+        description: Name of Service
+      description:
+        type: string
+        description: Description of service
+      vendor:
+        type: string
+        description: Vendor who supplied service
+      default_version:
+        type: string
+        description: Default version for service
+      versions:
+        type: object
+        additionalProperties:
+          items:
+            type: string
+        description: Versions available for service
+      catalogId:
+        type: string
+        description: Catalog ID to which service belongs
+      type:
+        type: string
+        description: Type of the service (ByRef, Local, Composable)
+      categories:
+        type: array
+        items:
+          type: string
+        description: Categories to which service belongs
+      labels:
+        type: array
+        items:
+          type: string
+        description: Search tags
+      iconURL:
+        type: string
+        description: Link to Icon for service
+      documentationURL:
+        type: string
+        description: Link to online documentation
+      readmeURL:
+        type: string
+        description: Link to readme for service
+
+  Service_Instance_Response:
+    type: object
+    properties:
+      name:
+        type: string
+        description: instance name
+      id:
+        type: string
+        description: instance id
+      uid:
+        type: string
+        description: instance uid
+      creationTimestamp:
+        type: string
+        description: creation timestamp
+      status:
+        type: string
+        description: service status
+      instance_details:
+        type: object
+        additionalProperties:
+          items:
+            type: object
+            additionalProperties:
+            items:
+                  type: string
+        description: instance details
+
+  Service_Instance_Request:
+    type: object
+    properties:
+      name:
+        type: string
+        description: name of the instance
+      id:
+        type: string
+        description: instance id
+      description:
+        type: string
+        description: description of the service instance
+      service_id:
+        type: string
+        description: service id which lets you identify the service from the catalog
+      version:
+        type: string
+        description: version of the service
+      labels:
+        type: array
+        items: {
+                type: string
+        }
+        description: labels to be added to the service instance
+      parameters:
+        type: array
+        description: Supported version of the service template
+        items:
+          $ref: "#/definitions/Service_Instance_Request_Parameters"
+
+  Service_Instance_Request_Parameters:
+    type: object
+    properties:
+      name:
+          type: string
+          description: name of the parameter
+      value:
+          type: string
+          description: value of the parameter
+
+  ServiceVersion_Response:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Service Version ID (0/1)
+      version:
+        type: string
+        description: service version name (comes from the template)
+      serviceId:
+        type: string
+        description: service id
+      templates:
+        type: object
+        additionalProperties:
+          items:
+            type: string
+
+  ServiceVersionTemplate_Response:
+    type: string
+    format: json
+    description: Service Version template contents
+
+  CatalogRepository_Response:
+    type: object
+    properties:
+      id:
+        type: string
+        description: catalog id
+      name:
+        type: string
+        description: catalog name
+      description:
+        type: string
+      catalog_type:
+        type: string
+        description: Git/CF Cluster
+      url:
+        type: string
+        description: URL for Git/CF Cluster
+      username:
+        type: string
+        description: Username
+      password:
+        type: string
+        description: Password
+      links:
+        type: object
+        additionalProperties:
+          items:
+            type: string
+
+  Error:
+    type: object
+    required:
+    - message
+    properties:
+      code:
+        type: integer
+        format: int64
+      message:
+        type: string
+
+  Category_Response:
+    type: string
+    format: json
+    description: Service category classification
